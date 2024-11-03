@@ -1,0 +1,188 @@
+@font-face {
+  font-family: "yeonsung";
+  src: url("BMYEONSUNG.ttf");
+}
+body {
+  font-family: "yeonsung";
+  font-size: large;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f8f8f8;
+  margin: 0;
+  padding: 20px;
+}
+.navbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+}
+.navbar_menu {
+  display: none; /* Initially hidden */
+  position: absolute;
+  width: 150px;
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+  z-index: 10; /* Ensure the menu is on top */
+}
+.navbar_menu_toggleBtn {
+  color: black;
+}
+.navbar_menu.show {
+  display: block; /* Show the menu when 'show' class is added */
+}
+
+.navbar_menu_list {
+  font-size: 0px;
+  font-weight: 600;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar_menu_list li {
+  text-align: center;
+  padding-top: 16px;
+  margin: 8px -10px;
+  margin-top: -5px;
+  cursor: pointer;
+  font-size: 14px;
+  color: black;
+}
+.navbar_menu_list a {
+  text-decoration: none;
+}
+.navbar_menu_list :first-child {
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.add-category-button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.container {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 800px;
+  margin-top: 20px;
+}
+.month_week-container,
+.calendar-container,
+.category-container,
+.color-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 20);
+}
+.color-container {
+  margin-bottom: 10px;
+}
+.month_week-container {
+  margin-top: 10px;
+}
+.calendar-container {
+  width: 300px;
+}
+
+.category-container {
+  width: 200px;
+}
+
+.month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.mood-icons {
+  font-size: 14px;
+}
+
+.nav-buttons button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.saturday {
+  color: blue;
+}
+
+.sunday {
+  color: red;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.day {
+  width: 35px;
+  height: 35px;
+  background-color: #eee;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.day.selected {
+  background-color: black;
+  color: white;
+}
+
+.category-container h3 {
+  margin-top: 0;
+}
+
+#categoryList {
+  margin-top: 10px;
+}
+
+.category {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f2f2f2;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.category .category-name {
+  margin: 0;
+  font-weight: bold;
+}
+
+.category .category-icon {
+  font-size: 16px;
+}

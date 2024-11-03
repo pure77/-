@@ -1,0 +1,58 @@
+body {
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  text-decoration: none;
+  font-size: x-large;
+  padding-top: 10px;
+  margin: 0px 20px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+.header a {
+  color: black;
+}
+.input-section {
+  margin: 0px 20px;
+  margin-top: 20px;
+  padding: 10px 0;
+}
+
+.input-section input[type="text"] {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  font-size: 16px;
+}
+
+.option-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.option-section label {
+  font-size: 16px;
+}
+
+.option-section select,
+.color-picker {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
+}
+
+.color-picker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: black; /* Default color */
+}
