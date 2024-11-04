@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="managementCategory.css" />
-    <title>카테고리 등록</title>
+    <title>카테고리 관리</title>
   </head>
   <body>
     <header class="header">
@@ -12,13 +12,24 @@
       <span>카테고리 관리</span>
       <a href="addCategory.html"> <i class="fa-solid fa-plus"></i></a>
     </header>
-    <section class="category_list">
-      <!-- 자바 스크립트로 피드에있는 카테고리 가져오기-->
+    <section class="category_list" id="categoryList">
+      <!-- Categories will be loaded here -->
     </section>
+
+    <!-- Edit category modal (hidden by default) -->
+    <div class="edit-modal" id="editModal">
+      <div class="modal-content">
+        <h3>카테고리 수정</h3>
+        <input type="text" id="editCategoryInput" placeholder="카테고리 이름" />
+        <button id="saveEditBtn">저장</button>
+        <button id="cancelEditBtn">취소</button>
+      </div>
+    </div>
 
     <script
       src="https://kit.fontawesome.com/00ff3a61fe.js"
       crossorigin="anonymous"
     ></script>
+    <script src="managementCategory.js"></script>
   </body>
 </html>

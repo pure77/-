@@ -8,12 +8,12 @@
   </head>
   <body>
     <header class="header">
-      <a href="index.html"> <i class="fa-solid fa-chevron-left"></i></a>
+      <a href="index.html"><i class="fa-solid fa-chevron-left"></i></a>
       <span>카테고리 등록</span>
-      <span>완료</span>
+      <span id="add">완료</span>
     </header>
     <section class="input-section">
-      <input type="text" placeholder="카테고리 입력" />
+      <input type="text" id="categoryInput" placeholder="카테고리 입력" />
     </section>
 
     <section class="option-section">
@@ -25,5 +25,20 @@
       src="https://kit.fontawesome.com/00ff3a61fe.js"
       crossorigin="anonymous"
     ></script>
+    <script>
+      document.getElementById("add").addEventListener("click", function () {
+        const categoryTitle = document.getElementById("categoryInput").value;
+        if (categoryTitle) {
+          // Save the category title to localStorage
+          let categories = JSON.parse(localStorage.getItem("categories")) || [];
+          categories.push({ title: categoryTitle });
+          localStorage.setItem("categories", JSON.stringify(categories));
+          // Redirect back to index.html
+          window.location.href = "index.html";
+        } else {
+          alert("카테고리 이름을 입력하세요!");
+        }
+      });
+    </script>
   </body>
 </html>

@@ -98,7 +98,7 @@ body {
 }
 
 .category-container {
-  width: 200px;
+  width: 320px;
 }
 
 .month-header {
@@ -185,4 +185,41 @@ body {
 
 .category .category-icon {
   font-size: 16px;
+}
+
+.category-item button{
+  background-color: white;
+  border: none;
+  font-size: large;
+
+
+}
+.task-item{
+  display: flex;
+}
+.task-item input{
+  margin-bottom: 10px;
+  border: none;
+  border-bottom: 1px solid black;
+}
+.task-item input:focus{
+  outline: none;
+ 
+}
+.task-item input.completed {
+  border: none; /* Remove the underline */
+  background-color: transparent; /* Optional: change background to transparent */
+}
+.deleteTaskButton {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px;
+  margin-left: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.deleteTaskButton:hover {
+  background-color: darkred;
 }

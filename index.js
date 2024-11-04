@@ -84,15 +84,6 @@ function nextMonth() {
   updateCalendar();
 }
 
-// Function to add a new category
-function addCategory() {
-  const categoryName = prompt("Enter category name:");
-  if (categoryName) {
-    const category = { name: categoryName };
-    categories.push(category);
-    renderCategories();
-  }
-}
 
 // Function to render the list of categories
 function renderCategories() {
