@@ -208,7 +208,6 @@ body {
 }
 .task-item input.completed {
   border: none; /* Remove the underline */
-  background-color: transparent; /* Optional: change background to transparent */
 }
 .deleteTaskButton {
   background-color: red;

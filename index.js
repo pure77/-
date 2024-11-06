@@ -3,44 +3,36 @@ const monthHeader = document.querySelector(".month-header span");
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
 let currentYear = currentDate.getFullYear();
+let selectedDay = currentDate.getDate();
 let categories = [];
-let todos = {};
+let todos = {}; // Object to store tasks by date
 
-// Array of month names for display
 const monthNames = [
-  "1월",
-  "2월",
-  "3월",
-  "4월",
-  "5월",
-  "6월",
-  "7월",
-  "8월",
-  "9월",
-  "10월",
-  "11월",
-  "12월",
+  "1월", "2월", "3월", "4월", "5월", "6월",
+  "7월", "8월", "9월", "10월", "11월", "12월"
 ];
 
 // Function to render the calendar for the current month and year
 function updateCalendar() {
   monthHeader.textContent = `${currentYear}년 ${monthNames[currentMonth]}`;
   daysContainer.innerHTML = "";
+  
+  // Get the first day of the month
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  // Fill empty slots for days before the first day of the month
+  // Adjust for the correct start of the month (fixing weekday misalignment)
   for (let i = 0; i < firstDay; i++) {
-    const emptysection = document.createElement("section");
-    daysContainer.appendChild(emptysection);
+    const emptySection = document.createElement("section");
+    daysContainer.appendChild(emptySection);
   }
 
-  // Add days of the month
+  // Render all the days for the month
   for (let day = 1; day <= daysInMonth; day++) {
-    const daysection = document.createElement("section");
-    daysection.classList.add("day");
-    daysection.textContent = day;
-    daysection.onclick = () => selectDay(daysection, day);
+    const daySection = document.createElement("section");
+    daySection.classList.add("day");
+    daySection.textContent = day;
+    daySection.onclick = () => selectDay(daySection, day);
 
     // Highlight today's date
     if (
@@ -48,23 +40,22 @@ function updateCalendar() {
       currentMonth === currentDate.getMonth() &&
       currentYear === currentDate.getFullYear()
     ) {
-      daysection.classList.add("selected");
+      daySection.classList.add("selected");
     }
 
-    daysContainer.appendChild(daysection);
+    daysContainer.appendChild(daySection);
   }
 }
 
-// Function to handle day selection
-function selectDay(selectedDay, day) {
-  document
-    .querySelectorAll(".day")
-    .forEach((day) => day.classList.remove("selected"));
-  selectedDay.classList.add("selected");
-  renderCategoriesForDay(day);
+
+function selectDay(selectedDayElement, day) {
+  document.querySelectorAll(".day").forEach(dayElement => dayElement.classList.remove("selected"));
+  selectedDayElement.classList.add("selected");
+
+  selectedDay = day;
+  renderCategoriesForDay();
 }
 
-// Function to navigate to the previous month
 function prevMonth() {
   currentMonth--;
   if (currentMonth < 0) {
@@ -74,7 +65,6 @@ function prevMonth() {
   updateCalendar();
 }
 
-// Function to navigate to the next month
 function nextMonth() {
   currentMonth++;
   if (currentMonth > 11) {
@@ -84,111 +74,225 @@ function nextMonth() {
   updateCalendar();
 }
 
+function loadCategories() {
+  const categoryList = document.getElementById("categoryList");
+  categoryList.innerHTML = "";
+  categories = JSON.parse(localStorage.getItem("categories")) || [];
 
-// Function to render the list of categories
-function renderCategories() {
+  categories.forEach(category => {
+    const categoryDiv = document.createElement("div");
+    categoryDiv.classList.add("category-item");
+    categoryDiv.innerHTML = `
+      <span>${category.title}</span>
+      <button class="addTaskButton">+</button>
+      <div class="taskList"></div>
+    `;
+
+    categoryDiv.querySelector(".addTaskButton").addEventListener("click", function () {
+      const taskList = categoryDiv.querySelector(".taskList");
+      addTask(taskList, category.title);
+    });
+
+    categoryList.appendChild(categoryDiv);
+  });
+}
+
+function renderCategoriesForDay() {
   const categoryList = document.getElementById("categoryList");
   categoryList.innerHTML = "";
 
-  categories.forEach((category, index) => {
-    const categorysection = document.createElement("section");
-    categorysection.classList.add("category");
+  categories.forEach(category => {
+    const categoryDiv = document.createElement("div");
+    categoryDiv.classList.add("category-item");
+    categoryDiv.innerHTML = `
+      <span>${category.title}</span>
+      <button class="addTaskButton">+</button>
+      <div class="taskList"></div>
+    `;
 
-    const categoryName = document.createElement("span");
-    categoryName.classList.add("category-name");
-    categoryName.textContent = category.name;
-    categorysection.appendChild(categoryName);
+    const taskList = categoryDiv.querySelector(".taskList");
+    const dateKey = getDateKey(currentYear, currentMonth, selectedDay);
+    const monthKey = `${currentYear}-${currentMonth + 1}`;
+    const weekKey = getWeekKey(currentYear, currentMonth, selectedDay);
 
-    const icon = document.createElement("span");
-    icon.classList.add("category-icon");
-    icon.textContent = "🔒";
-    categorysection.appendChild(icon);
+    let tasks = [];
 
-    categorysection.onclick = () => openTodoList(index);
-    categoryList.appendChild(categorysection);
+    if (category.title === "Month") {
+      tasks = todos[monthKey] && todos[monthKey][category.title] || [];
+    } else if (category.title === "Week") {
+      tasks = todos[weekKey] && todos[weekKey][category.title] || [];
+    } else {
+      tasks = todos[dateKey] && todos[dateKey][category.title] || [];
+    }
+
+    tasks.forEach(task => {
+      const taskItem = createTaskElement(task, category.title, dateKey);
+      taskList.appendChild(taskItem);
+    });
+
+    categoryDiv.querySelector(".addTaskButton").onclick = () => addTask(taskList, category.title);
+
+    categoryList.appendChild(categoryDiv);
   });
 }
 
-// Function to render categories and to-dos for a selected day
-function renderCategoriesForDay(day) {
-  if (!todos[currentYear]) todos[currentYear] = {};
-  if (!todos[currentYear][currentMonth]) todos[currentYear][currentMonth] = {};
-  if (!todos[currentYear][currentMonth][day])
-    todos[currentYear][currentMonth][day] = {};
+function addTask(taskList, categoryTitle) {
+  const taskItem = createTaskElement("", categoryTitle, getDateKey(currentYear, currentMonth, selectedDay));
+  const taskInput = taskItem.querySelector(".task-input");
 
-  categories.forEach((_, index) => {
-    const dayTodos = todos[currentYear][currentMonth][day][index] || [];
-    todos[currentYear][currentMonth][day][index] = dayTodos;
+  let isTaskSaved = false;
 
-    console.log(
-      `Category: ${categories[index].name}, Todos for Day ${day}:`,
-      dayTodos
-    );
+  const saveTaskHandler = () => {
+    if (taskInput.value.trim() !== "" && !isTaskSaved) {
+      isTaskSaved = true;
+      saveTask(categoryTitle, taskInput.value.trim());
+      renderCategoriesForDay();
+      taskInput.value = "";
+    }
+  };
+
+  taskInput.addEventListener("keypress", event => {
+    if (event.key === "Enter") {
+      saveTaskHandler();
+    }
   });
+
+  taskInput.addEventListener("blur", saveTaskHandler);
+  taskList.appendChild(taskItem);
 }
 
-// Function to open and manage to-do list for a selected day and category
-function openTodoList(categoryIndex) {
-  const selectedDay = document.querySelector(".day.selected");
-  if (!selectedDay) {
-    alert("Please select a day first!");
-    return;
+function createTaskElement(taskText, categoryTitle, dateKey) {
+  const taskItem = document.createElement("div");
+  taskItem.classList.add("task-item");
+  taskItem.innerHTML = `
+    <input type="checkbox" class="task-checkbox" />
+    <input type="text" value="${taskText}" placeholder="할 일 입력" class="task-input" />
+    <button class="delete-task-button">삭제</button>
+  `;
+
+  const taskInput = taskItem.querySelector(".task-input");
+  const deleteButton = taskItem.querySelector(".delete-task-button");
+
+  taskInput.addEventListener("blur", () => {
+    if (taskInput.value.trim() !== "") {
+      taskInput.classList.add("completed");
+    }
+  });
+
+  deleteButton.addEventListener("click", () => {
+    deleteTask(categoryTitle, taskText, dateKey);
+    renderCategoriesForDay();
+  });
+
+  return taskItem;
+}
+ // Add task function for Month section
+ function addMonthTask() {
+  const monthTaskList = document.getElementById("monthTaskList");
+  addTask(monthTaskList); // Call addTask with the correct task list
+}
+
+// Add task function for Week section
+function addWeekTask() {
+  const weekTaskList = document.getElementById("weekTaskList");
+  addTask(weekTaskList); // Call addTask with the correct task list
+}
+
+// Load categories on page load
+window.onload = loadCategories;
+
+// Hook up the buttons in Month/Week section to the add task functions
+document
+  .querySelectorAll(".month_week-container .addTaskButton")
+  .forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const categoryTitle = event.target.closest(".category-item").querySelector("span").innerText;
+      const taskList = categoryTitle === "Month" ? document.getElementById("monthTaskList") : document.getElementById("weekTaskList");
+      addTask(taskList, categoryTitle);
+    });
+  });
+  function saveTask(categoryTitle, taskText) {
+    const dateKey = getDateKey(currentYear, currentMonth, selectedDay);
+    const monthKey = `${currentYear}-${currentMonth + 1}`; // key for the month
+    const weekKey = getWeekKey(currentYear, currentMonth, selectedDay); // key for the week
+  
+    todos[dateKey] = todos[dateKey] || {};
+    todos[monthKey] = todos[monthKey] || {};
+    todos[weekKey] = todos[weekKey] || {};
+  
+    if (categoryTitle === "Month") {
+      todos[monthKey][categoryTitle] = todos[monthKey][categoryTitle] || [];
+      todos[monthKey][categoryTitle].push(taskText);
+    } else if (categoryTitle === "Week") {
+      todos[weekKey][categoryTitle] = todos[weekKey][categoryTitle] || [];
+      todos[weekKey][categoryTitle].push(taskText);
+    } else {
+      todos[dateKey][categoryTitle] = todos[dateKey][categoryTitle] || [];
+      todos[dateKey][categoryTitle].push(taskText);
+    }
+  
+    localStorage.setItem("todos", JSON.stringify(todos));
   }
-
-  const day = parseInt(selectedDay.textContent);
-
-  if (!todos[currentYear][currentMonth][day][categoryIndex]) {
-    todos[currentYear][currentMonth][day][categoryIndex] = [];
+  function getWeekKey(year, month, day) {
+    const date = new Date(year, month, day);
+    const startOfYear = new Date(year, 0, 1);
+    const daysSinceStart = Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000));
+    const weekNumber = Math.ceil((daysSinceStart + 1) / 7);
+    return `${year}-W${weekNumber}`;
   }
+function deleteTask(categoryTitle, taskText, dateKey) {
+  if (todos[dateKey] && todos[dateKey][categoryTitle]) {
+    todos[dateKey][categoryTitle] = todos[dateKey][categoryTitle].filter(task => task !== taskText);
 
-  const todoText = prompt("Enter a new to-do item:");
-  if (todoText) {
-    todos[currentYear][currentMonth][day][categoryIndex].push(todoText);
-    alert(
-      `Added "${todoText}" to ${
-        categories[categoryIndex].name
-      } on ${currentYear}-${currentMonth + 1}-${day}`
-    );
+    if (todos[dateKey][categoryTitle].length === 0) {
+      delete todos[dateKey][categoryTitle];
+    }
+
+    if (Object.keys(todos[dateKey]).length === 0) {
+      delete todos[dateKey];
+    }
+
+    localStorage.setItem("todos", JSON.stringify(todos));
   }
 }
+
+function getDateKey(year, month, day) {
+  return `${year}-${month + 1}-${day}`;
+}
+
 const menu = document.getElementById("navbarMenu");
 const menuIcon = document.getElementById("menuIcon");
 
 function positionMenu() {
-  // Get the icon's position
   const iconRect = menuIcon.getBoundingClientRect();
-
-  // Position the menu below the icon
   menu.style.top = `${iconRect.bottom + window.scrollY}px`;
   menu.style.left = `${iconRect.left + window.scrollX}px`;
 }
 
 function toggleMenu() {
-  menu.classList.toggle("show"); // Toggle the 'show' class to show/hide the menu
+  menu.classList.toggle("show");
 
   if (menu.classList.contains("show")) {
-    // Position the menu when it becomes visible
     positionMenu();
   }
 }
 
-// Reposition the menu on window resize if it is open
 window.addEventListener("resize", () => {
   if (menu.classList.contains("show")) {
     positionMenu();
   }
 });
 
-// Close the menu if clicked outside of it
 window.onclick = function (event) {
-  if (
-    !menu.contains(event.target) &&
-    event.target !== menuIcon &&
-    !menuIcon.contains(event.target)
-  ) {
-    menu.classList.remove("show"); // Hide the menu
+  if (!menu.contains(event.target) && event.target !== menuIcon && !menuIcon.contains(event.target)) {
+    menu.classList.remove("show");
   }
 };
 
-// Initialize the calendar
-updateCalendar();
+window.onload = () => {
+  categories = JSON.parse(localStorage.getItem("categories")) || [];
+  todos = JSON.parse(localStorage.getItem("todos")) || {};
+  updateCalendar();
+  loadCategories();
+  renderCategoriesForDay();
+}; 
