@@ -8,15 +8,25 @@ let categories = [];
 let todos = {}; // Object to store tasks by date
 
 const monthNames = [
-  "1월", "2월", "3월", "4월", "5월", "6월",
-  "7월", "8월", "9월", "10월", "11월", "12월"
+  "1월",
+  "2월",
+  "3월",
+  "4월",
+  "5월",
+  "6월",
+  "7월",
+  "8월",
+  "9월",
+  "10월",
+  "11월",
+  "12월",
 ];
 
 // Function to render the calendar for the current month and year
 function updateCalendar() {
   monthHeader.textContent = `${currentYear}년 ${monthNames[currentMonth]}`;
   daysContainer.innerHTML = "";
-  
+
   // Get the first day of the month
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -47,9 +57,10 @@ function updateCalendar() {
   }
 }
 
-
 function selectDay(selectedDayElement, day) {
-  document.querySelectorAll(".day").forEach(dayElement => dayElement.classList.remove("selected"));
+  document
+    .querySelectorAll(".day")
+    .forEach((dayElement) => dayElement.classList.remove("selected"));
   selectedDayElement.classList.add("selected");
 
   selectedDay = day;
@@ -79,7 +90,7 @@ function loadCategories() {
   categoryList.innerHTML = "";
   categories = JSON.parse(localStorage.getItem("categories")) || [];
 
-  categories.forEach(category => {
+  categories.forEach((category) => {
     const categoryDiv = document.createElement("div");
     categoryDiv.classList.add("category-item");
     categoryDiv.innerHTML = `
@@ -88,10 +99,12 @@ function loadCategories() {
       <div class="taskList"></div>
     `;
 
-    categoryDiv.querySelector(".addTaskButton").addEventListener("click", function () {
-      const taskList = categoryDiv.querySelector(".taskList");
-      addTask(taskList, category.title);
-    });
+    categoryDiv
+      .querySelector(".addTaskButton")
+      .addEventListener("click", function () {
+        const taskList = categoryDiv.querySelector(".taskList");
+        addTask(taskList, category.title);
+      });
 
     categoryList.appendChild(categoryDiv);
   });
@@ -101,7 +114,7 @@ function renderCategoriesForDay() {
   const categoryList = document.getElementById("categoryList");
   categoryList.innerHTML = "";
 
-  categories.forEach(category => {
+  categories.forEach((category) => {
     const categoryDiv = document.createElement("div");
     categoryDiv.classList.add("category-item");
     categoryDiv.innerHTML = `
@@ -118,26 +131,31 @@ function renderCategoriesForDay() {
     let tasks = [];
 
     if (category.title === "Month") {
-      tasks = todos[monthKey] && todos[monthKey][category.title] || [];
+      tasks = (todos[monthKey] && todos[monthKey][category.title]) || [];
     } else if (category.title === "Week") {
-      tasks = todos[weekKey] && todos[weekKey][category.title] || [];
+      tasks = (todos[weekKey] && todos[weekKey][category.title]) || [];
     } else {
-      tasks = todos[dateKey] && todos[dateKey][category.title] || [];
+      tasks = (todos[dateKey] && todos[dateKey][category.title]) || [];
     }
 
-    tasks.forEach(task => {
+    tasks.forEach((task) => {
       const taskItem = createTaskElement(task, category.title, dateKey);
       taskList.appendChild(taskItem);
     });
 
-    categoryDiv.querySelector(".addTaskButton").onclick = () => addTask(taskList, category.title);
+    categoryDiv.querySelector(".addTaskButton").onclick = () =>
+      addTask(taskList, category.title);
 
     categoryList.appendChild(categoryDiv);
   });
 }
 
 function addTask(taskList, categoryTitle) {
-  const taskItem = createTaskElement("", categoryTitle, getDateKey(currentYear, currentMonth, selectedDay));
+  const taskItem = createTaskElement(
+    "",
+    categoryTitle,
+    getDateKey(currentYear, currentMonth, selectedDay)
+  );
   const taskInput = taskItem.querySelector(".task-input");
 
   let isTaskSaved = false;
@@ -151,7 +169,7 @@ function addTask(taskList, categoryTitle) {
     }
   };
 
-  taskInput.addEventListener("keypress", event => {
+  taskInput.addEventListener("keypress", (event) => {
     if (event.key === "Enter") {
       saveTaskHandler();
     }
@@ -186,8 +204,8 @@ function createTaskElement(taskText, categoryTitle, dateKey) {
 
   return taskItem;
 }
- // Add task function for Month section
- function addMonthTask() {
+// Add task function for Month section
+function addMonthTask() {
   const monthTaskList = document.getElementById("monthTaskList");
   addTask(monthTaskList); // Call addTask with the correct task list
 }
@@ -206,50 +224,69 @@ document
   .querySelectorAll(".month_week-container .addTaskButton")
   .forEach((button) => {
     button.addEventListener("click", (event) => {
-      const categoryTitle = event.target.closest(".category-item").querySelector("span").innerText;
-      const taskList = categoryTitle === "Month" ? document.getElementById("monthTaskList") : document.getElementById("weekTaskList");
+      const categoryTitle = event.target
+        .closest(".category-item")
+        .querySelector("span").innerText;
+      const taskList =
+        categoryTitle === "Month"
+          ? document.getElementById("monthTaskList")
+          : document.getElementById("weekTaskList");
       addTask(taskList, categoryTitle);
     });
   });
-  function saveTask(categoryTitle, taskText) {
-    const dateKey = getDateKey(currentYear, currentMonth, selectedDay);
-    const monthKey = `${currentYear}-${currentMonth + 1}`; // key for the month
-    const weekKey = getWeekKey(currentYear, currentMonth, selectedDay); // key for the week
-  
-    todos[dateKey] = todos[dateKey] || {};
-    todos[monthKey] = todos[monthKey] || {};
-    todos[weekKey] = todos[weekKey] || {};
-  
-    if (categoryTitle === "Month") {
-      todos[monthKey][categoryTitle] = todos[monthKey][categoryTitle] || [];
-      todos[monthKey][categoryTitle].push(taskText);
-    } else if (categoryTitle === "Week") {
-      todos[weekKey][categoryTitle] = todos[weekKey][categoryTitle] || [];
-      todos[weekKey][categoryTitle].push(taskText);
-    } else {
-      todos[dateKey][categoryTitle] = todos[dateKey][categoryTitle] || [];
-      todos[dateKey][categoryTitle].push(taskText);
-    }
-  
-    localStorage.setItem("todos", JSON.stringify(todos));
+function saveTask(categoryTitle, taskText) {
+  const dateKey = getDateKey(currentYear, currentMonth, selectedDay);
+  const monthKey = `${currentYear}-${currentMonth + 1}`; // key for the month
+  const weekKey = getWeekKey(currentYear, currentMonth, selectedDay); // key for the week
+
+  todos[dateKey] = todos[dateKey] || {};
+  todos[monthKey] = todos[monthKey] || {};
+  todos[weekKey] = todos[weekKey] || {};
+
+  if (categoryTitle === "Month") {
+    todos[monthKey][categoryTitle] = todos[monthKey][categoryTitle] || [];
+    todos[monthKey][categoryTitle].push(taskText);
+  } else if (categoryTitle === "Week") {
+    todos[weekKey][categoryTitle] = todos[weekKey][categoryTitle] || [];
+    todos[weekKey][categoryTitle].push(taskText);
+  } else {
+    todos[dateKey][categoryTitle] = todos[dateKey][categoryTitle] || [];
+    todos[dateKey][categoryTitle].push(taskText);
   }
-  function getWeekKey(year, month, day) {
-    const date = new Date(year, month, day);
-    const startOfYear = new Date(year, 0, 1);
-    const daysSinceStart = Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000));
-    const weekNumber = Math.ceil((daysSinceStart + 1) / 7);
-    return `${year}-W${weekNumber}`;
-  }
+
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
+function getWeekKey(year, month, day) {
+  const date = new Date(year, month, day);
+  const startOfYear = new Date(year, 0, 1);
+  const daysSinceStart = Math.floor(
+    (date - startOfYear) / (24 * 60 * 60 * 1000)
+  );
+  const weekNumber = Math.ceil((daysSinceStart + 1) / 7);
+  return `${year}-W${weekNumber}`;
+}
 function deleteTask(categoryTitle, taskText, dateKey) {
-  if (todos[dateKey] && todos[dateKey][categoryTitle]) {
-    todos[dateKey][categoryTitle] = todos[dateKey][categoryTitle].filter(task => task !== taskText);
+  let key;
 
-    if (todos[dateKey][categoryTitle].length === 0) {
-      delete todos[dateKey][categoryTitle];
+  if (categoryTitle === "Month") {
+    key = `${currentYear}-${currentMonth + 1}`; // monthKey
+  } else if (categoryTitle === "Week") {
+    key = getWeekKey(currentYear, currentMonth, selectedDay); // weekKey
+  } else {
+    key = dateKey;
+  }
+
+  if (todos[key] && todos[key][categoryTitle]) {
+    todos[key][categoryTitle] = todos[key][categoryTitle].filter(
+      (task) => task !== taskText
+    );
+
+    if (todos[key][categoryTitle].length === 0) {
+      delete todos[key][categoryTitle];
     }
 
-    if (Object.keys(todos[dateKey]).length === 0) {
-      delete todos[dateKey];
+    if (Object.keys(todos[key]).length === 0) {
+      delete todos[key];
     }
 
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -284,7 +321,11 @@ window.addEventListener("resize", () => {
 });
 
 window.onclick = function (event) {
-  if (!menu.contains(event.target) && event.target !== menuIcon && !menuIcon.contains(event.target)) {
+  if (
+    !menu.contains(event.target) &&
+    event.target !== menuIcon &&
+    !menuIcon.contains(event.target)
+  ) {
     menu.classList.remove("show");
   }
 };
@@ -295,4 +336,4 @@ window.onload = () => {
   updateCalendar();
   loadCategories();
   renderCategoriesForDay();
-}; 
+};
